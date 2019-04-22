@@ -34,7 +34,7 @@ To use Win32 app management, be sure you meet the following criteria:
 
 - Windows 10 version 1607 or later (Enterprise, Pro, and Education versions)
 - Windows 10 client needs to be: 
-    - Devices must be joined to Azure AD and auto-enrolled. The Intune management extension supports Azure AD joined, hybrid domain joined, group policy enrolled devices are supported. 
+    - Devices must be joined to Azure AD and auto-enrolled. The Intune management extension supports Azure AD joined and hybrid domain joined devices. Group Policy enrolled devices are supported with the following note. 
     > [!NOTE]
     > For the group policy enrolled scenario - The end user uses the local user account to AAD join their Windows 10 device. The user must log onto the device using their AAD user account and enroll into Intune. Intune will install the Intune Management extension on the device if a PowerShell script or a Win32 app is targeted to the user or device.
 - Windows application size is capped at 8 GB per app.
@@ -106,7 +106,7 @@ Much like a line-of-business (LOB) app, you can add a Win32 app to Microsoft Int
 2.	In the **App information** pane, configure the following information. Some of the values in this pane might be automatically filled in.
     - **Name**: Enter the name of the app as it appears in the company portal. If the same app name exists twice, each app will appear in the company portal.
     - **Description**: Enter a description for the app. The description appears in the company portal.
-    - **Publishe**r: Enter the name of the publisher of the app.
+    - **Publisher**: Enter the name of the publisher of the app.
     - **Category**: Select one or more of the built-in app categories or select a category that you created. Categories make it easier for users to find the app when they browse through the company portal.
     - **Display this as a featured app in the Company Portal**: Display the app prominently on the main page of the company portal when users browse for apps.
     - **Information URL**: Optionally, enter the URL of a website that contains information about the app. The URL appears in the company portal.
@@ -124,14 +124,16 @@ Much like a line-of-business (LOB) app, you can add a Win32 app to Microsoft Int
     For example, if your app filename is **MyApp123**, add the following:<br>
     `msiexec /p “MyApp123.msp”`<p>
     And, if the application is `ApplicationName.exe`, the command would be the application name followed by the command arguments (switches) supported by the package. <br>For example:<br>
-    `ApplicationName.exe /quite`<br>
-    In the above command, the `ApplicaitonName.exe` package supports the `/quite` command argument.<p> 
+    `ApplicationName.exe /quiet`<br>
+    In the above command, the `ApplicationName.exe` package supports the `/quiet` command argument.<p> 
     For the specific arguments supported by the application package, contact your application vendor.
 
 3.	Add the complete uninstall command line to uninstall the app based on the app’s GUID. 
 
     For example:
     `msiexec /x “{12345A67-89B0-1234-5678-000001000000}”`
+    
+    To find out the application's GUID, you can run `get-wmiobject Win32_Product | sort-object -property Name | Format-Table IdentifyingNumber, Name, LocalPackage -AutoSize` from a machine that already has the application installed.
 
     > [!NOTE]
     > You can configure a Win32 app to be installed in **User** or **System** context. **User** context refers to only a given user. **System** context refers to all users of a Windows 10 device.
